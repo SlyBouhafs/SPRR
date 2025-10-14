@@ -2,14 +2,14 @@
 
 SPRR is a lightweight svelte web app that makes it easy to review and compare multiple pull requests side-by-side.
 
-### 🚀 Getting Started
+## 🚀 Getting Started
 
 1 - Clone the repository git clone <your-repo-url>
 2 - Install dependencies `npm install`
 3 - Run the app `npm run dev:all`
 4 - Open the displayed url and start comparing PRs!
 
-### ✨ Features
+## ✨ Features
 
 -   Compare up to 3 PRs side-by-side
 -   No CORS issues – GitHub API calls are handled through a backend proxy
