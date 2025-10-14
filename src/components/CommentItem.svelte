@@ -116,14 +116,23 @@
                     spellcheck="true"
                 ></textarea>
                 <div class="edit-actions">
-                    <button class="save-btn" onclick={save} disabled={saving}>
+                    <button
+                        title="Save"
+                        class="save-btn"
+                        onclick={save}
+                        disabled={saving}
+                    >
                         {#if saving}
                             <i class="bx bx-loader-alt bx-spin"></i>
                         {:else}
                             <i class="bx bxs-save"></i>
                         {/if}
                     </button>
-                    <button class="cancel-btn" onclick={cancelEdit}>
+                    <button
+                        title="Cancel"
+                        class="cancel-btn"
+                        onclick={cancelEdit}
+                    >
                         <i class="bx bx-x"></i>
                     </button>
                 </div>

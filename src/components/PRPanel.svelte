@@ -56,7 +56,7 @@
 </script>
 
 <article class="pr-pane">
-    <label class="pr-pane-label">Pull Request #{index}</label>
+    <label for="Load" class="pr-pane-label">Pull Request #{index}</label>
 
     <div class="input-group">
         <input
@@ -66,6 +66,7 @@
             placeholder="https://github.com/owner/repo/pull/123"
         />
         <button
+            title="Load"
             class="load-btn"
             onclick={() => load()}
             disabled={loading || !url.trim()}

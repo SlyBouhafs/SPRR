@@ -5,7 +5,12 @@
 <div class="pr-info">
     <div class="pr-header">
         <div class="flex">
-            <a href={pr.html_url} target="_blank" rel="noopener noreferrer">
+            <a
+                title="Github"
+                href={pr.html_url}
+                target="_blank"
+                rel="noopener noreferrer"
+            >
                 <i class="bx bx-git-pull-request"></i></a
             >
             <h3>{pr.title}</h3>
