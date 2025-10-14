@@ -4,10 +4,10 @@ SPRR is a lightweight svelte web app that makes it easy to review and compare mu
 
 ### 🚀 Getting Started
 
--   Clone the repository git clone <your-repo-url>
--   Install dependencies `npm install`
--   Run the app `npm run dev:all`
--   Open the displayed url and start comparing PRs!
+1 - Clone the repository git clone <your-repo-url>
+2 - Install dependencies `npm install`
+3 - Run the app `npm run dev:all`
+4 - Open the displayed url and start comparing PRs!
 
 ### ✨ Features
 
