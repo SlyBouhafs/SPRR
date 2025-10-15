@@ -583,10 +583,10 @@ input:-webkit-autofill:focus {
 
 .shortcuts {
     position: absolute;
-    right: 6px;
-    top: 6px;
+    right: 7px;
+    top: 7px;
     display: flex;
-    gap: 6px;
+    gap: 4px;
     z-index: 10;
     opacity: 0;
     transition: opacity 0.2s;
@@ -636,7 +636,7 @@ a:hover,
 }
 
 .comment-meta {
-    padding: 12px 14px;
+    padding: 14px 14px;
     font-size: 12px;
     color: var(--yellow);
     cursor: pointer;
@@ -645,7 +645,7 @@ a:hover,
 }
 
 .comment-body {
-    padding: 0px 14px 10px 14px;
+    padding: 0px 14px 14px 14px;
     font-size: 13px;
     color: var(--white);
     line-height: 1.6;
@@ -831,6 +831,7 @@ a:hover,
     border-radius: var(--border-radius);
     padding: 10px;
     overflow-x: auto;
+    margin-top: 7px;
 }
 
 .markdown-body pre code {
