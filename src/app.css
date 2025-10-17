@@ -87,10 +87,17 @@ body {
 .header h1 {
     font-size: 24px;
     font-weight: 600;
-    color: var(--white);
+    color: var(--cyan);
     display: flex;
     align-items: center;
     gap: 12px;
+}
+
+.header .count {
+    background: var(--cyan);
+    border-radius: var(--border-radius);
+    padding: 0px 3px;
+    color: var(--darker-background);
 }
 
 .header-icon {

@@ -3,8 +3,9 @@
     import PRInfo from "./PRInfo.svelte";
     import Comments from "./Comments.svelte";
     import { fade } from "svelte/transition";
+    import { totalCount } from "./store";
 
-    let { index, showToast } = $props();
+    let { index, showToast, totalComments } = $props();
 
     let url = $state("");
     let data = $state(null);
@@ -26,7 +27,13 @@
 
         try {
             data = await fetchPR(url);
+            if (data)
+                totalComments[index - 1] =
+                    data.comments.length + data.reviewComments.length;
+
+            $totalCount = totalComments.reduce((a, b) => a + b, 0);
             if (!silent) showToast("Comments Retrieved!", "info");
+
             startRefresh();
         } catch (err) {
             error = err.message;

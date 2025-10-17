@@ -4,6 +4,7 @@
 
     let toastMessage = $state(null);
     let toastType = $state("info");
+    let totalComments = [];
 
     function showToast(message, type = "info") {
         toastMessage = message;
@@ -13,9 +14,9 @@
 </script>
 
 <main class="main-content">
-    <PRPanel index={1} {showToast} />
-    <PRPanel index={2} {showToast} />
-    <PRPanel index={3} {showToast} />
+    <PRPanel index={1} {totalComments} {showToast} />
+    <PRPanel index={2} {totalComments} {showToast} />
+    <PRPanel index={3} {totalComments} {showToast} />
 </main>
 
 <Toast message={toastMessage} type={toastType} />
