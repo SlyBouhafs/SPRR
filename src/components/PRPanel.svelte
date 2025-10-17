@@ -3,7 +3,7 @@
     import PRInfo from "./PRInfo.svelte";
     import Comments from "./Comments.svelte";
     import { fade } from "svelte/transition";
-    import { totalCount } from "./store";
+    import { totalCommentsCount } from "./store";
 
     let { index, showToast, totalComments } = $props();
 
@@ -31,7 +31,7 @@
                 totalComments[index - 1] =
                     data.comments.length + data.reviewComments.length;
 
-            $totalCount = totalComments.reduce((a, b) => a + b, 0);
+            $totalCommentsCount = totalComments.reduce((a, b) => a + b, 0);
             if (!silent) showToast("Comments Retrieved!", "info");
 
             startRefresh();
