@@ -16,8 +16,8 @@ function parseURL(url) {
  * @returns {number|null} - PR number or null if not found
  */
 export function extractPRNumber(url) {
-    const match = url.match(/\/pull\/(\d+)/);
-    return match ? parseInt(match[1], 10) : null;
+    const parsed = parseURL(url);
+    return parsed ? parseInt(parsed.number, 10) : null;
 }
 
 /**
@@ -27,10 +27,10 @@ export function extractPRNumber(url) {
  * @returns {string} - URL with incremented PR number
  */
 export function incrementPRNumber(url, increment) {
-    const prNumber = extractPRNumber(url);
-    if (prNumber === null) return url;
+    const parsed = parseURL(url);
+    if (!parsed) return url;
 
-    const newPRNumber = prNumber + increment;
+    const newPRNumber = parseInt(parsed.number, 10) + increment;
     return url.replace(/\/pull\/\d+/, `/pull/${newPRNumber}`);
 }
 

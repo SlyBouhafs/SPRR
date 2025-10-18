@@ -7,9 +7,14 @@
     import PRInfo from "./PRInfo.svelte";
     import Comments from "./Comments.svelte";
     import { fade } from "svelte/transition";
-    import { totalCommentsCount, urlPropagation } from "./store";
+    import {
+        totalCommentsCount,
+        urlPropagation,
+        updatePanelComments,
+        resetPanelComments,
+    } from "./store";
 
-    let { index, showToast, totalComments } = $props();
+    let { index, showToast } = $props();
 
     let url = $state("");
     let data = $state(null);
@@ -37,10 +42,12 @@
 
         try {
             data = await fetchPR(url);
-            if (data)
-                totalComments[index - 1] =
+            if (data) {
+                // Update this panel's comment count in the store
+                const commentCount =
                     data.comments.length + data.reviewComments.length;
-            $totalCommentsCount = totalComments.reduce((a, b) => a + b, 0);
+                updatePanelComments(index, commentCount);
+            }
             if (!silent) {
                 showToast("Comments Retrieved!", "info");
                 // Only propagate if this is a user-initiated load, not an auto-load
@@ -56,6 +63,8 @@
         } catch (err) {
             error = err.message;
             if (!silent) showToast(error, "error");
+            // Reset comment count for this panel when error occurs
+            resetPanelComments(index);
             stopRefresh();
         } finally {
             loading = false;
