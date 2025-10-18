@@ -123,7 +123,7 @@
                         disabled={saving}
                     >
                         {#if saving}
-                            <i class="bx bx-loader-alt bx-spin"></i>
+                            <i class="bx bx-loader-dots bx-spin"></i>
                         {:else}
                             <i class="bx bxs-save"></i>
                         {/if}
