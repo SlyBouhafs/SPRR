@@ -12,9 +12,8 @@
     let edited = $state(false);
     let copied = $state(false);
     let showDiff = $state(false);
-
     let cssClass = $derived(
-        `comment ${type} ${currentBody.toLowerCase().includes(" bad") ? "negative" : "positive"}`
+        `comment ${type} ${currentBody.toLowerCase().includes(" bad") ? "negative" : "positive"}`,
     );
 
     let metaText = $derived(
@@ -22,7 +21,7 @@
             ? `Line: ${comment.line || comment.original_line}`
             : type === "general"
               ? `${comment.user?.login || "Unknown"} • ${new Date(comment.created_at).toLocaleString()}`
-              : `${comment.user?.login || "Unknown"} • ${comment.state || ""}`
+              : `${comment.user?.login || "Unknown"} • ${comment.state || ""}`,
     );
 
     let canShowDiff = $derived(type === "review" && comment.path);

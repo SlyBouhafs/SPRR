@@ -91,7 +91,7 @@ app.patch("/api/comment/:type/:owner/:repo/:id", async (req, res) => {
 
 if (process.env.NODE_ENV === "production") {
     app.get("*", (req, res) =>
-        res.sendFile(path.join(__dirname, "dist/index.html"))
+        res.sendFile(path.join(__dirname, "dist/index.html")),
     );
 }
 

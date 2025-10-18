@@ -12,7 +12,7 @@ marked.use(
             const language = hljs.getLanguage(lang) ? lang : "plaintext";
             return hljs.highlight(code, { language }).value;
         },
-    })
+    }),
 );
 
 marked.setOptions({
@@ -48,7 +48,7 @@ export function formatDiff(patch) {
           <td class="diff-line-num diff-line-num-old"></td>
           <td class="diff-line-num diff-line-num-new">${newLine}</td>
           <td class="diff-line diff-add"><span>+</span>${highlightLine(
-              code
+              code,
           )}</td>
         </tr>
       `;
@@ -60,7 +60,7 @@ export function formatDiff(patch) {
           <td class="diff-line-num diff-line-num-old">${oldLine}</td>
           <td class="diff-line-num diff-line-num-new"></td>
           <td class="diff-line diff-remove"><span>-</span>${highlightLine(
-              code
+              code,
           )}</td>
         </tr>
       `;
@@ -72,7 +72,7 @@ export function formatDiff(patch) {
           <td class="diff-line-num diff-line-num-old">${oldLine || ""}</td>
           <td class="diff-line-num diff-line-num-new">${newLine || ""}</td>
           <td class="diff-line diff-context"><span> </span>${highlightLine(
-              code
+              code,
           )}</td>
         </tr>
       `;
@@ -116,7 +116,7 @@ export function groupByFile(comments) {
         arr.sort(
             (a, b) =>
                 (a.line || a.original_line || 0) -
-                (b.line || b.original_line || 0)
+                (b.line || b.original_line || 0),
         );
     });
 
