@@ -12,6 +12,9 @@
         incrementPRNumber,
         updatePanelComments,
         resetPanelComments,
+        isValidGitHubPRUrl,
+        debounce,
+        throttle,
     } from "../utils/helpers.js";
 
     let { index, showToast } = $props();
@@ -22,6 +25,8 @@
     let error = $state("");
     let refreshing = $state(false);
     let intervalId = null;
+    let urlValidationMessage = $state("");
+    let isUrlValid = $state(true);
 
     /**
      * Loads PR data from the GitHub API
@@ -31,6 +36,13 @@
      */
     async function load(silent = false, isAutoLoad = false) {
         if (!url.trim()) return;
+
+        // Validate GitHub PR URL before attempting to load
+        if (!isValidGitHubPRUrl(url)) {
+            error = "Invalid GitHub PR URL";
+            showToast("Please enter a valid GitHub PR URL", "error");
+            return;
+        }
 
         error = "";
 
@@ -95,21 +107,35 @@
     /**
      * Handles paste events in the URL input field
      * Propagates the pasted URL to other panels with incremented PR numbers
+     * Debounced to prevent rapid-fire paste events
      * @param {ClipboardEvent} e - The paste event
      * @returns {void}
      */
-    function handlePaste(e) {
-        setTimeout(() => {
-            const pastedUrl = url.trim();
-            if (pastedUrl && extractPRNumber(pastedUrl)) {
-                urlPropagation.set({
-                    url: pastedUrl,
-                    sourceIndex: index,
-                    autoLoad: false,
-                });
-            }
-        }, 0);
-    }
+    const handlePaste = debounce(() => {
+        const pastedUrl = url.trim();
+        if (pastedUrl && extractPRNumber(pastedUrl)) {
+            urlPropagation.set({
+                url: pastedUrl,
+                sourceIndex: index,
+                autoLoad: false,
+            });
+        }
+    }, 150);
+
+    /**
+     * Validates URL input in real-time with debouncing
+     * Provides user feedback on URL validity as they type
+     */
+    const validateUrlInput = debounce(() => {
+        const trimmedUrl = url.trim();
+
+        if (!trimmedUrl) {
+            isUrlValid = true;
+            return;
+        }
+
+        isUrlValid = isValidGitHubPRUrl(trimmedUrl);
+    }, 300);
 
     /**
      * Listen for URL propagation from other panels
@@ -150,26 +176,34 @@
     <label for="Load" class="pr-pane-label">Pull Request #{index}</label>
 
     <div class="input-group">
+        {#if url.trim()}
+            <i
+                class="validation-icon bx {isUrlValid ? 'bx-check' : 'bx-x'}"
+                class:valid={isUrlValid}
+                class:invalid={!isUrlValid}
+            ></i>
+        {/if}
         <input
             type="url"
             bind:value={url}
+            oninput={validateUrlInput}
             onkeydown={(e) => e.key === "Enter" && load()}
             onpaste={handlePaste}
             placeholder="https://github.com/owner/repo/pull/123"
             aria-label="GitHub Pull Request URL for panel {index}"
+            class:has-icon={url.trim()}
         />
         <button
             title="Load"
             class="load-btn"
-            onclick={() => load()}
+            onclick={throttle(() => load(), 1000)}
             disabled={loading || !url.trim()}
             aria-label="Load pull request {index}"
         >
             <i
-                class={[
-                    !loading && "bx bxs-arrow-big-down-line",
-                    loading && "bx bxs-loader-dots bx-spin",
-                ]}
+                class="bx {loading
+                    ? 'bxs-loader-dots bx-spin'
+                    : 'bxs-arrow-big-down-line'}"
             ></i>
         </button>
     </div>

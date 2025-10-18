@@ -2,6 +2,7 @@
 @import "highlight.js/styles/github-dark.css";
 
 :root {
+    /* Background Colors */
     --darkest-background: #0e0d11;
     --darker-background: #191a21;
     --dark-background: #21222c;
@@ -9,9 +10,13 @@
     --light-background: #343746;
     --lighter-background: #424450;
     --current-line: #44475a;
+
+    /* Text Colors */
     --comment: #6272a4;
     --white: #f8f8f2;
     --white-hover: #f8f8f280;
+
+    /* Theme Colors */
     --red: #ff5555;
     --red-hover: #ff555580;
     --orange: #ffb86c;
@@ -26,8 +31,24 @@
     --cyan-hover: #8be9fd80;
     --pink: #ff79c6;
     --pink-hover: #ff79c680;
+
+    /* Diff Colors with Opacity */
+    --diff-add-bg: rgba(80, 250, 123, 0.1);
+    --diff-add-bg-hover: rgba(80, 250, 123, 0.25);
+    --diff-add-row-bg: rgba(80, 250, 123, 0.15);
+    --diff-add-linenum-bg: rgba(80, 250, 123, 0.2);
+    --diff-remove-bg: rgba(255, 85, 85, 0.1);
+    --diff-remove-bg-hover: rgba(255, 85, 85, 0.25);
+    --diff-remove-row-bg: rgba(255, 85, 85, 0.15);
+    --diff-remove-linenum-bg: rgba(255, 85, 85, 0.2);
+
+    /* Spacing */
     --border-radius: 3px;
 }
+
+/* ============================================================================
+   Global Styles
+   ============================================================================ */
 
 * {
     margin: 0;
@@ -53,7 +74,9 @@ body {
     text-rendering: optimizeLegibility;
 }
 
-/* Scrollbar */
+/* ============================================================================
+   Scrollbar
+   ============================================================================ */
 ::-webkit-scrollbar {
     width: 2px;
     height: 2px;
@@ -73,7 +96,9 @@ body {
     -webkit-border-radius: 1ex;
 }
 
-/* Header */
+/* ============================================================================
+   Header
+   ============================================================================ */
 .header {
     background: var(--darker-background);
     padding: 20px;
@@ -130,7 +155,9 @@ body {
     transform: translateY(-1px);
 }
 
-/* Login Screen */
+/* ============================================================================
+   Login Screen
+   ============================================================================ */
 .login-screen {
     display: flex;
     align-items: center;
@@ -241,6 +268,10 @@ body {
 }
 
 /* Main Content */
+/* ============================================================================
+   Main Content & PR Panels
+   ============================================================================ */
+
 .main-content {
     max-width: calc(100vw - 100px);
     margin: 0 auto;
@@ -269,21 +300,52 @@ body {
     margin: 16px 20px 12px 20px;
 }
 
+/* ============================================================================
+   Input Group & Validation
+   ============================================================================ */
+
 .input-group {
     display: flex;
     gap: 10px;
     margin: 0px 20px;
     margin-bottom: 20px;
+    position: relative;
+    align-items: center;
 }
 
 .input-group input {
     flex: 1;
-    padding: 12px 14px;
+    padding: 16px;
     border: 1px solid var(--current-line);
     border-radius: var(--border-radius);
     font-size: 13px;
     background: var(--dark-background);
     color: var(--white);
+}
+
+/* ============================================================================
+   URL Validation Styles
+   ============================================================================ */
+.validation-icon {
+    position: absolute;
+    left: 12px;
+    font-size: 1rem;
+    z-index: 1;
+    pointer-events: none;
+    transition: all 0.2s ease;
+}
+
+.validation-icon.valid {
+    color: var(--green);
+}
+
+.validation-icon.invalid {
+    color: var(--red);
+}
+
+input.has-icon {
+    padding-left: 35px;
+    padding-right: 55px;
 }
 
 input:-webkit-autofill,
@@ -299,6 +361,9 @@ input:-webkit-autofill:focus {
 }
 
 .load-btn {
+    position: absolute;
+    right: 7px;
+    z-index: 9999;
     padding: 5px 10px 0px 10px;
     background: var(--green);
     color: var(--dark-background);
@@ -322,6 +387,10 @@ input:-webkit-autofill:focus {
 }
 
 /* Error */
+/* ============================================================================
+   Error & Loading States
+   ============================================================================ */
+
 .error {
     background: var(--red-hover);
     border: 1px solid var(--red);
@@ -389,6 +458,10 @@ input:-webkit-autofill:focus {
     color: var(--darker-background);
     border-radius: var(--border-radius);
 }
+
+/* ============================================================================
+   PR Info Section
+   ============================================================================ */
 
 .pr-info {
     background: var(--dark-background);
@@ -470,6 +543,10 @@ input:-webkit-autofill:focus {
 }
 
 /* Comment Section */
+/* ============================================================================
+   Comments Section
+   ============================================================================ */
+
 .comment-section {
     margin: 0px 18px 20px 20px;
     border: 1px solid var(--current-line);
@@ -744,6 +821,10 @@ a:hover,
 }
 
 /* Notification */
+/* ============================================================================
+   Toast Notifications
+   ============================================================================ */
+
 .notification {
     position: fixed;
     top: 5vh;
@@ -794,6 +875,10 @@ a:hover,
 }
 
 /* Markdown Styling */
+/* ============================================================================
+   Markdown Styles
+   ============================================================================ */
+
 .markdown-body {
     color: var(--white);
     font-size: 13px;
@@ -944,6 +1029,10 @@ a:hover,
     font-size: 10px;
 }
 
+/* ============================================================================
+   Utility Classes
+   ============================================================================ */
+
 .flex {
     display: flex;
     gap: 3px;
@@ -959,7 +1048,9 @@ a:hover,
     cursor: not-allowed;
 }
 
-/* Responsive */
+/* ============================================================================
+   Responsive Design
+   ============================================================================ */
 @media (max-width: 1400px) {
     .main-content {
         grid-template-columns: 1fr;
@@ -969,6 +1060,10 @@ a:hover,
         max-height: none;
     }
 }
+
+/* ============================================================================
+   Diff Viewer Components
+   ============================================================================ */
 
 /* Diff Button */
 .diff-btn {
@@ -994,11 +1089,6 @@ a:hover,
 .edit-btn.active {
     background: var(--purple);
     color: var(--white);
-}
-
-.diff-btn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
 }
 
 .diff-btn:disabled {
@@ -1046,11 +1136,11 @@ a:hover,
 }
 
 .diff-add {
-    background: rgba(80, 250, 123, 0.1);
+    background: var(--diff-add-bg);
 }
 
 .diff-remove {
-    background: rgba(255, 85, 85, 0.1);
+    background: var(--diff-remove-bg);
 }
 
 /* Line content */
@@ -1066,15 +1156,15 @@ a:hover,
 
 /* Addition rows */
 .diff-add-row {
-    background: rgba(80, 250, 123, 0.15);
+    background: var(--diff-add-row-bg);
 }
 
 .diff-add-row:hover {
-    background: rgba(80, 250, 123, 0.25);
+    background: var(--diff-add-bg-hover);
 }
 
 .diff-add-row .diff-line-num-new {
-    background: rgba(80, 250, 123, 0.2);
+    background: var(--diff-add-linenum-bg);
     color: var(--green);
 }
 
@@ -1084,15 +1174,15 @@ a:hover,
 
 /* Removal rows */
 .diff-remove-row {
-    background: rgba(255, 85, 85, 0.15);
+    background: var(--diff-remove-row-bg);
 }
 
 .diff-remove-row:hover {
-    background: rgba(255, 85, 85, 0.25);
+    background: var(--diff-remove-bg-hover);
 }
 
 .diff-remove-row .diff-line-num-old {
-    background: rgba(255, 85, 85, 0.2);
+    background: var(--diff-remove-linenum-bg);
     color: var(--red);
 }
 
