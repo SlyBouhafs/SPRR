@@ -124,6 +124,10 @@ dist
 
 # Stores VSCode versions used for testing VSCode extensions
 .vscode-test
+.vscode/
+
+# Zed Editor Configuration files
+.zed/
 
 # yarn v3
 .pnp.*

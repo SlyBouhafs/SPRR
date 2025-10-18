@@ -1,9 +1,13 @@
 <script>
-    import { fetchPR } from "../api/github.js";
+    import {
+        fetchPR,
+        extractPRNumber,
+        incrementPRNumber,
+    } from "../api/github.js";
     import PRInfo from "./PRInfo.svelte";
     import Comments from "./Comments.svelte";
     import { fade } from "svelte/transition";
-    import { totalCommentsCount } from "./store";
+    import { totalCommentsCount, urlPropagation } from "./store";
 
     let { index, showToast, totalComments } = $props();
 
@@ -14,7 +18,13 @@
     let refreshing = $state(false);
     let intervalId = null;
 
-    async function load(silent = false) {
+    /**
+     * Loads PR data from the GitHub API
+     * @param {boolean} silent - If true, performs a silent refresh without showing loading state or toast
+     * @param {boolean} isAutoLoad - If true, indicates this load was triggered by another panel to prevent propagation loops
+     * @returns {Promise<void>}
+     */
+    async function load(silent = false, isAutoLoad = false) {
         if (!url.trim()) return;
 
         error = "";
@@ -30,10 +40,18 @@
             if (data)
                 totalComments[index - 1] =
                     data.comments.length + data.reviewComments.length;
-
             $totalCommentsCount = totalComments.reduce((a, b) => a + b, 0);
-            if (!silent) showToast("Comments Retrieved!", "info");
-
+            if (!silent) {
+                showToast("Comments Retrieved!", "info");
+                // Only propagate if this is a user-initiated load, not an auto-load
+                if (!isAutoLoad) {
+                    urlPropagation.set({
+                        url,
+                        sourceIndex: index,
+                        autoLoad: true,
+                    });
+                }
+            }
             startRefresh();
         } catch (err) {
             error = err.message;
@@ -45,17 +63,65 @@
         }
     }
 
+    /**
+     * Starts an automatic refresh interval that silently reloads PR data every 60 seconds
+     * @returns {void}
+     */
     function startRefresh() {
         if (intervalId) return;
         intervalId = setInterval(() => load(true), 60000);
     }
 
+    /**
+     * Stops the automatic refresh interval
+     * @returns {void}
+     */
     function stopRefresh() {
         if (intervalId) {
             clearInterval(intervalId);
             intervalId = null;
         }
     }
+
+    /**
+     * Handles paste events in the URL input field
+     * Propagates the pasted URL to other panels with incremented PR numbers
+     * @param {ClipboardEvent} e - The paste event
+     * @returns {void}
+     */
+    function handlePaste(e) {
+        setTimeout(() => {
+            const pastedUrl = url.trim();
+            if (pastedUrl && extractPRNumber(pastedUrl)) {
+                urlPropagation.set({
+                    url: pastedUrl,
+                    sourceIndex: index,
+                    autoLoad: false,
+                });
+            }
+        }, 200);
+    }
+
+    // Listen for URL propagation
+    $effect(() => {
+        const unsubscribe = urlPropagation.subscribe((data) => {
+            if (
+                data.url &&
+                data.sourceIndex !== null &&
+                data.sourceIndex !== index
+            ) {
+                const increment = index - data.sourceIndex;
+                url = incrementPRNumber(data.url, increment);
+
+                // Auto-fetch if autoLoad flag is set
+                if (data.autoLoad) {
+                    load(false, true);
+                }
+            }
+        });
+
+        return unsubscribe;
+    });
 
     $effect(() => {
         return () => stopRefresh();
@@ -70,6 +136,7 @@
             type="url"
             bind:value={url}
             onkeydown={(e) => e.key === "Enter" && load()}
+            onpaste={handlePaste}
             placeholder="https://github.com/owner/repo/pull/123"
         />
         <button
