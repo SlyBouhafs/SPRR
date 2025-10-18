@@ -1,38 +1,5 @@
-import { auth } from "../state/auth.svelte.js";
-
-/**
- * Parses a GitHub PR URL to extract owner, repo, and PR number
- * @param {string} url - Full GitHub PR URL (e.g., https://github.com/owner/repo/pull/123)
- * @returns {Object|null} - Object with owner, repo, and number properties, or null if invalid
- */
-function parseURL(url) {
-    const match = url.match(/github\.com\/([^\/]+)\/([^\/]+)\/pull\/(\d+)/);
-    return match ? { owner: match[1], repo: match[2], number: match[3] } : null;
-}
-
-/**
- * Extracts PR number from GitHub PR URL
- * @param {string} url - GitHub PR URL
- * @returns {number|null} - PR number or null if not found
- */
-export function extractPRNumber(url) {
-    const parsed = parseURL(url);
-    return parsed ? parseInt(parsed.number, 10) : null;
-}
-
-/**
- * Increments PR number in a GitHub PR URL
- * @param {string} url - GitHub PR URL
- * @param {number} increment - Amount to increment (can be negative)
- * @returns {string} - URL with incremented PR number
- */
-export function incrementPRNumber(url, increment) {
-    const parsed = parseURL(url);
-    if (!parsed) return url;
-
-    const newPRNumber = parseInt(parsed.number, 10) + increment;
-    return url.replace(/\/pull\/\d+/, `/pull/${newPRNumber}`);
-}
+import { auth } from "../state/state.svelte.js";
+import { parseURL } from "../utils/helpers.js";
 
 /**
  * Fetches pull request data from GitHub including comments, review comments, reviews, and files

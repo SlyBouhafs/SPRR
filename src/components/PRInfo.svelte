@@ -1,5 +1,30 @@
 <script>
+    import { pluralize } from "../utils/helpers.js";
+
+    /**
+     * @typedef {Object} PullRequest
+     * @property {string} html_url
+     * @property {string} title
+     * @property {number} comments
+     * @property {number} review_comments
+     * @property {number} changed_files
+     * @property {number} additions
+     * @property {number} deletions
+     */
+
+    /**
+     * Pull request data
+     * @type {PullRequest}
+     */
     let { pr, refreshing } = $props();
+
+    // Safe derived values with defaults
+    let totalComments = $derived(
+        (pr?.comments ?? 0) + (pr?.review_comments ?? 0),
+    );
+    let changedFiles = $derived(pr?.changed_files ?? 0);
+    let additions = $derived(pr?.additions ?? 0);
+    let deletions = $derived(pr?.deletions ?? 0);
 </script>
 
 <div class="pr-info">
@@ -7,15 +32,16 @@
         <div class="flex">
             <a
                 title="Github"
-                href={pr.html_url}
+                href={pr?.html_url ?? "#"}
                 target="_blank"
                 rel="noopener noreferrer"
+                aria-label="Open pull request on GitHub"
             >
                 <i class="bx bx-git-pull-request"></i></a
             >
-            <h3>{pr.title}</h3>
+            <h3>{pr?.title ?? "Untitled"}</h3>
         </div>
-        <span class="count">{pr.comments + pr.review_comments}</span>
+        <span class="count">{totalComments}</span>
         <i
             class={!refreshing ? "" : "bx bx-loader-dots bx-spin active"}
             title="Auto-refreshing every 30s"
@@ -23,17 +49,15 @@
     </div>
     <div class="changes">
         <p>
-            {pr.changed_files <= 1
-                ? pr.changed_files + " file"
-                : pr.changed_files + " files"} changed
+            {pluralize(changedFiles, "file")} changed
         </p>
         <div class="lines">
             <p>
-                <span class="add"> +{pr.additions}</span>
-                <span class="rem"> -{pr.deletions}</span>
+                <span class="add"> +{additions}</span>
+                <span class="rem"> -{deletions}</span>
             </p>
             <p class="blocks">
-                {#if pr.additions >= pr.deletions}
+                {#if additions >= deletions}
                     <i class="bx bxs-square add"></i>
                     <i class="bx bxs-square add"></i>
                     <i class="bx bxs-square rem"></i>

@@ -1,5 +1,5 @@
 <script>
-    import { formatDiff } from "../utils/markdown.js";
+    import { formatDiff } from "../utils/formatters.js";
     import { slide } from "svelte/transition";
 
     let { comment, files } = $props();

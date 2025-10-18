@@ -1056,7 +1056,6 @@ a:hover,
 /* Line content */
 .diff-line {
     padding: 0 10px;
-    white-space: pre;
     vertical-align: top;
 }
 

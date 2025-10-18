@@ -1,6 +1,6 @@
 <script>
-    import { groupByFile } from "../utils/markdown.js";
-    import CommentItem from "./CommentItem.svelte";
+    import { groupByFile } from "../utils/formatters.js";
+    import Comment from "./Comment.svelte";
 
     let {
         title,
@@ -43,7 +43,7 @@
                             </summary>
                             <div>
                                 {#each fileComments as comment (comment.id)}
-                                    <CommentItem
+                                    <Comment
                                         {comment}
                                         {type}
                                         {url}
@@ -59,13 +59,7 @@
             {:else}
                 <div>
                     {#each comments as comment (comment.id)}
-                        <CommentItem
-                            {comment}
-                            {type}
-                            {url}
-                            {files}
-                            {showToast}
-                        />
+                        <Comment {comment} {type} {url} {files} {showToast} />
                     {/each}
                 </div>
             {/if}

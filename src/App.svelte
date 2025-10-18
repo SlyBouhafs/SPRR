@@ -1,14 +1,14 @@
 <script>
-    import { auth } from "./state/auth.svelte.js";
+    import { auth } from "./state/state.svelte.js";
     import Header from "./components/Header.svelte";
     import Login from "./components/Login.svelte";
-    import PRComparator from "./components/PRComparator.svelte";
+    import PRMain from "./components/PRMain.svelte";
 </script>
 
 <Header />
 
 {#if auth.isAuthenticated}
-    <PRComparator />
+    <PRMain />
 {:else}
     <Login />
 {/if}

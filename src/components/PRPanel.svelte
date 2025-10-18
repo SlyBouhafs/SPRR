@@ -1,18 +1,18 @@
 <script>
-    import {
-        fetchPR,
-        extractPRNumber,
-        incrementPRNumber,
-    } from "../api/github.js";
+    import { fetchPR } from "../api/github.js";
     import PRInfo from "./PRInfo.svelte";
     import Comments from "./Comments.svelte";
     import { fade } from "svelte/transition";
     import {
         totalCommentsCount,
         urlPropagation,
+    } from "../state/state.svelte.js";
+    import {
+        extractPRNumber,
+        incrementPRNumber,
         updatePanelComments,
         resetPanelComments,
-    } from "./store";
+    } from "../utils/helpers.js";
 
     let { index, showToast } = $props();
 
@@ -108,32 +108,41 @@
                     autoLoad: false,
                 });
             }
-        }, 200);
+        }, 0);
     }
 
-    // Listen for URL propagation
-    $effect(() => {
-        const unsubscribe = urlPropagation.subscribe((data) => {
-            if (
-                data.url &&
-                data.sourceIndex !== null &&
-                data.sourceIndex !== index
-            ) {
-                const increment = index - data.sourceIndex;
-                url = incrementPRNumber(data.url, increment);
+    /**
+     * Listen for URL propagation from other panels
+     * Uses $effect.pre to ensure state updates happen before DOM updates
+     * This prevents potential race conditions when multiple panels update simultaneously
+     */
+    $effect.pre(() => {
+        const data = urlPropagation.value;
 
-                // Auto-fetch if autoLoad flag is set
-                if (data.autoLoad) {
-                    load(false, true);
-                }
+        // Only process if the propagation is from a different panel
+        if (
+            data.url &&
+            data.sourceIndex !== null &&
+            data.sourceIndex !== index
+        ) {
+            const increment = index - data.sourceIndex;
+            url = incrementPRNumber(data.url, increment);
+
+            // Auto-fetch if autoLoad flag is set
+            if (data.autoLoad) {
+                load(false, true);
             }
-        });
-
-        return unsubscribe;
+        }
     });
 
+    /**
+     * Cleanup effect to stop auto-refresh when component is destroyed
+     * This prevents memory leaks from dangling intervals
+     */
     $effect(() => {
-        return () => stopRefresh();
+        return () => {
+            stopRefresh();
+        };
     });
 </script>
 
@@ -147,12 +156,14 @@
             onkeydown={(e) => e.key === "Enter" && load()}
             onpaste={handlePaste}
             placeholder="https://github.com/owner/repo/pull/123"
+            aria-label="GitHub Pull Request URL for panel {index}"
         />
         <button
             title="Load"
             class="load-btn"
             onclick={() => load()}
             disabled={loading || !url.trim()}
+            aria-label="Load pull request {index}"
         >
             <i
                 class={[
