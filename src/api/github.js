@@ -15,7 +15,7 @@ export async function fetchPR(url) {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ token: auth.token }),
-        }
+        },
     );
 
     if (!response.ok) {
@@ -37,7 +37,7 @@ export async function updateComment(url, commentId, type, body) {
             method: "PATCH",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ token: auth.token, body }),
-        }
+        },
     );
 
     if (!response.ok) {
