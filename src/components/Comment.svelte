@@ -1,7 +1,7 @@
 <script>
     import { updateComment } from "../api/github.js";
     import { renderMarkdown } from "../utils/formatters.js";
-    import { copyToClipboard } from "../utils/helpers.js";
+    import { copyToClipboard, throttle } from "../utils/helpers.js";
     import DiffView from "./DiffView.svelte";
 
     let { comment, type, url, files, showToast, showLine = false } = $props();
@@ -36,6 +36,9 @@
             setTimeout(() => (copied = false), 2000);
         }
     }
+
+    // Throttled version to prevent spam clicking
+    const throttledCopy = throttle(copy, 1000);
 
     function startEdit() {
         editing = true;
@@ -76,7 +79,7 @@
             <button
                 class="copy-btn"
                 class:copied
-                onclick={copy}
+                onclick={throttledCopy}
                 title="Copy"
                 aria-label="Copy comment to clipboard"
             >
