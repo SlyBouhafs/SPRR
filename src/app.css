@@ -1125,12 +1125,11 @@ a:hover,
     background: var(--dark-background);
     color: var(--comment);
     text-align: center;
-    padding: 0 10px;
     user-select: none;
-    width: 50px;
-    min-width: 50px;
     border-right: 1px solid var(--current-line);
-    vertical-align: center;
+    width: 46px;
+    min-width: 46px;
+    max-width: 50px;
 }
 
 .diff-add {
@@ -1149,9 +1148,10 @@ a:hover,
     word-break: break-all;
 }
 
-.diff-line span:first-child {
-    margin-right: 8px;
-    font-weight: bold;
+.diff-line span.add,
+.diff-line span.rem {
+    width: 1.2em;
+    display: inline-block;
 }
 
 /* Addition rows */
@@ -1168,7 +1168,7 @@ a:hover,
     color: var(--green);
 }
 
-.diff-add span:first-child {
+.diff-add span.add {
     color: var(--green);
 }
 
@@ -1186,7 +1186,7 @@ a:hover,
     color: var(--red);
 }
 
-.diff-remove span:first-child {
+.diff-remove span.rem {
     color: var(--red);
 }
 

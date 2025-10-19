@@ -7,30 +7,6 @@ import hljs from "highlight.js";
 // Constants
 // ============================================================================
 
-const CSS_CLASSES = {
-    DIFF_TABLE: "diff-table",
-    DIFF_ADD_ROW: "diff-add-row",
-    DIFF_REMOVE_ROW: "diff-remove-row",
-    DIFF_CONTEXT_ROW: "diff-context-row",
-    DIFF_LINE_NUM: "diff-line-num",
-    DIFF_LINE_NUM_OLD: "diff-line-num-old",
-    DIFF_LINE_NUM_NEW: "diff-line-num-new",
-    DIFF_LINE: "diff-line",
-    DIFF_ADD: "diff-add",
-    DIFF_REMOVE: "diff-remove",
-    DIFF_CONTEXT: "diff-context",
-};
-
-const DIFF_PREFIXES = {
-    HUNK: "@@",
-    ADD: "+",
-    REMOVE: "-",
-    FILE_ADD: "+++",
-    FILE_REMOVE: "---",
-};
-
-const HUNK_PATTERN = /@@ -(\d+),?\d* \+(\d+),?\d* @@/;
-
 // ============================================================================
 // Marked Configuration
 // ============================================================================
@@ -77,114 +53,6 @@ function escapeHtml(text) {
 }
 
 // ============================================================================
-// Code Highlighting
-// ============================================================================
-
-const ENABLE_SYNTAX_HIGHLIGHTING = true; // Set to true to enable syntax highlighting
-
-/**
- * Highlights an entire code block and returns a map of line index to highlighted HTML
- * @param {Array<string>} codeLines - Array of code lines to highlight
- * @returns {Map<number, string>} - Map of line index to highlighted HTML
- */
-function highlightCodeBlock(codeLines) {
-    if (!ENABLE_SYNTAX_HIGHLIGHTING || codeLines.length === 0) {
-        // Return map of index -> escaped HTML
-        const map = new Map();
-        codeLines.forEach((line, index) => {
-            map.set(index, escapeHtml(line));
-        });
-        return map;
-    }
-
-    try {
-        // Join all lines with newlines for context
-        const fullCode = codeLines.join("\n");
-
-        // Highlight entire block
-        const result = hljs.highlightAuto(fullCode);
-
-        // Split highlighted HTML back into lines
-        const highlightedLines = splitHighlightedHtml(result.value);
-
-        // Create map of index -> highlighted line
-        const map = new Map();
-        highlightedLines.forEach((line, index) => {
-            map.set(index, line);
-        });
-
-        return map;
-    } catch (error) {
-        console.warn("Failed to highlight code block:", error);
-
-        // Fallback: return escaped HTML
-        const map = new Map();
-        codeLines.forEach((line, index) => {
-            map.set(index, escapeHtml(line));
-        });
-        return map;
-    }
-}
-
-/**
- * Splits highlighted HTML back into individual lines
- * @param {string} html - Highlighted HTML from hljs
- * @returns {Array<string>} - Array of highlighted lines
- */
-function splitHighlightedHtml(html) {
-    // Split by newlines while preserving HTML tags
-    const lines = [];
-    let currentLine = "";
-    let inTag = false;
-    let tagStack = [];
-
-    for (let i = 0; i < html.length; i++) {
-        const char = html[i];
-
-        if (char === "<") {
-            inTag = true;
-            currentLine += char;
-        } else if (char === ">") {
-            inTag = false;
-            currentLine += char;
-
-            // Track opening/closing tags
-            const tagMatch = currentLine.match(/<(\/?)([\w-]+)[^>]*>$/);
-            if (tagMatch) {
-                const isClosing = tagMatch[1] === "/";
-                const tagName = tagMatch[2];
-
-                if (isClosing) {
-                    tagStack.pop();
-                } else if (!currentLine.endsWith("/>")) {
-                    tagStack.push(tagName);
-                }
-            }
-        } else if (char === "\n" && !inTag) {
-            // Close any open tags
-            const closeTags = tagStack
-                .map((tag) => `</${tag}>`)
-                .reverse()
-                .join("");
-            lines.push(currentLine + closeTags);
-
-            // Reopen tags for next line
-            const openTags = tagStack.map((tag) => `<${tag}>`).join("");
-            currentLine = openTags;
-        } else {
-            currentLine += char;
-        }
-    }
-
-    // Add final line
-    if (currentLine) {
-        lines.push(currentLine);
-    }
-
-    return lines;
-}
-
-// ============================================================================
 // Markdown Rendering
 // ============================================================================
 
@@ -205,196 +73,6 @@ export function renderMarkdown(text) {
         console.error("Failed to render markdown:", error);
         return `<p>Error rendering markdown: ${escapeHtml(error.message)}</p>`;
     }
-}
-
-// ============================================================================
-// Diff Formatting - Helper Functions
-// ============================================================================
-
-/**
- * Parses a hunk header to extract line numbers
- * @param {string} line - Hunk header line (e.g., "@@ -1,5 +1,6 @@")
- * @returns {{oldLine: number, newLine: number} | null} - Parsed line numbers or null
- */
-function parseHunkHeader(line) {
-    const match = line.match(HUNK_PATTERN);
-    if (match) {
-        return {
-            oldLine: parseInt(match[1], 10),
-            newLine: parseInt(match[2], 10),
-        };
-    }
-    return null;
-}
-
-/**
- * Checks if a line is a file header
- * @param {string} line - Line to check
- * @returns {boolean} - True if line is a file header (starts with +++ or ---)
- */
-function isFileHeader(line) {
-    return (
-        line.startsWith(DIFF_PREFIXES.FILE_ADD) ||
-        line.startsWith(DIFF_PREFIXES.FILE_REMOVE)
-    );
-}
-
-/**
- * Creates an HTML table row for an added line in diff
- * @param {string} code - Code content without the '+' prefix (pre-highlighted HTML)
- * @param {number} lineNumber - Line number in the new version
- * @returns {string} - HTML string for the row
- */
-function createAddedRow(code, lineNumber) {
-    return `<tr class="${CSS_CLASSES.DIFF_ADD_ROW}"><td class="${CSS_CLASSES.DIFF_LINE_NUM} ${CSS_CLASSES.DIFF_LINE_NUM_OLD}"></td><td class="${CSS_CLASSES.DIFF_LINE_NUM} ${CSS_CLASSES.DIFF_LINE_NUM_NEW}">${lineNumber}</td><td class="${CSS_CLASSES.DIFF_LINE} ${CSS_CLASSES.DIFF_ADD}"><span>+</span>${code}</td></tr>`;
-}
-
-/**
- * Creates an HTML table row for a removed line in diff
- * @param {string} code - Code content without the '-' prefix (pre-highlighted HTML)
- * @param {number} lineNumber - Line number in the old version
- * @returns {string} - HTML string for the row
- */
-function createRemovedRow(code, lineNumber) {
-    return `<tr class="${CSS_CLASSES.DIFF_REMOVE_ROW}"><td class="${CSS_CLASSES.DIFF_LINE_NUM} ${CSS_CLASSES.DIFF_LINE_NUM_OLD}">${lineNumber}</td><td class="${CSS_CLASSES.DIFF_LINE_NUM} ${CSS_CLASSES.DIFF_LINE_NUM_NEW}"></td><td class="${CSS_CLASSES.DIFF_LINE} ${CSS_CLASSES.DIFF_REMOVE}"><span>-</span>${code}</td></tr>`;
-}
-
-/**
- * Creates an HTML table row for a context line in diff
- * @param {string} code - Code content (pre-highlighted HTML)
- * @param {number} oldLine - Line number in old version
- * @param {number} newLine - Line number in new version
- * @returns {string} - HTML string for the row
- */
-function createContextRow(code, oldLine, newLine) {
-    return `<tr class="${CSS_CLASSES.DIFF_CONTEXT_ROW}"><td class="${CSS_CLASSES.DIFF_LINE_NUM} ${CSS_CLASSES.DIFF_LINE_NUM_OLD}">${oldLine || ""}</td><td class="${CSS_CLASSES.DIFF_LINE_NUM} ${CSS_CLASSES.DIFF_LINE_NUM_NEW}">${newLine || ""}</td><td class="${CSS_CLASSES.DIFF_LINE} ${CSS_CLASSES.DIFF_CONTEXT}"><span> </span>${code}</td></tr>`;
-}
-
-/**
- * Processes a single line from a diff patch
- * @param {string} line - Single line from diff
- * @param {Object} state - Current state with oldLine, newLine counters, and codeIndex
- * @param {Map<number, string>} highlightMap - Map of code index to highlighted HTML
- * @returns {string} - HTML string for the line (may be empty for hunk headers)
- */
-function processDiffLine(line, state, highlightMap) {
-    // Handle hunk headers
-    if (line.startsWith(DIFF_PREFIXES.HUNK)) {
-        const parsed = parseHunkHeader(line);
-        if (parsed) {
-            state.oldLine = parsed.oldLine;
-            state.newLine = parsed.newLine;
-        }
-        return ""; // Hunk headers are not displayed in the table
-    }
-
-    // Handle added lines (exclude file header +++)
-    if (
-        line.startsWith(DIFF_PREFIXES.ADD) &&
-        !line.startsWith(DIFF_PREFIXES.FILE_ADD)
-    ) {
-        const code = line.slice(1); // Remove the '+' prefix
-        const highlightedCode =
-            highlightMap.get(state.codeIndex) || escapeHtml(code);
-        const row = createAddedRow(highlightedCode, state.newLine);
-        state.codeIndex++;
-        state.newLine++;
-        return row;
-    }
-
-    // Handle removed lines (exclude file header ---)
-    if (
-        line.startsWith(DIFF_PREFIXES.REMOVE) &&
-        !line.startsWith(DIFF_PREFIXES.FILE_REMOVE)
-    ) {
-        const code = line.slice(1); // Remove the '-' prefix
-        const highlightedCode =
-            highlightMap.get(state.codeIndex) || escapeHtml(code);
-        const row = createRemovedRow(highlightedCode, state.oldLine);
-        state.codeIndex++;
-        state.oldLine++;
-        return row;
-    }
-
-    // Handle context lines (unchanged lines) - exclude file headers
-    if (!isFileHeader(line)) {
-        const code = line.startsWith(" ") ? line.slice(1) : line;
-        const highlightedCode =
-            highlightMap.get(state.codeIndex) || escapeHtml(code);
-        const row = createContextRow(
-            highlightedCode,
-            state.oldLine,
-            state.newLine,
-        );
-        state.codeIndex++;
-        // Increment both line counters for context lines
-        if (state.oldLine) state.oldLine++;
-        if (state.newLine) state.newLine++;
-        return row;
-    }
-
-    return "";
-}
-
-// ============================================================================
-// Diff Formatting - Main Function
-// ============================================================================
-
-/**
- * Formats a git diff patch into an HTML table with syntax highlighting
- * Displays line numbers for old and new versions and color-codes additions, deletions, and context
- * @param {string} patch - Git diff patch string to format
- * @returns {string} - HTML table string with formatted diff
- * @throws {Error} - If patch is not a string
- */
-export function formatDiff(patch) {
-    if (typeof patch !== "string") {
-        throw new Error("formatDiff expects a string as input");
-    }
-
-    if (!patch.trim()) {
-        return `<p>No diff available</p>`;
-    }
-
-    const lines = patch.split("\n");
-
-    // First pass: collect all code lines for highlighting
-    const codeLines = [];
-    for (const line of lines) {
-        if (
-            line.startsWith(DIFF_PREFIXES.ADD) &&
-            !line.startsWith(DIFF_PREFIXES.FILE_ADD)
-        ) {
-            codeLines.push(line.slice(1));
-        } else if (
-            line.startsWith(DIFF_PREFIXES.REMOVE) &&
-            !line.startsWith(DIFF_PREFIXES.FILE_REMOVE)
-        ) {
-            codeLines.push(line.slice(1));
-        } else if (
-            !isFileHeader(line) &&
-            !line.startsWith(DIFF_PREFIXES.HUNK)
-        ) {
-            const code = line.startsWith(" ") ? line.slice(1) : line;
-            codeLines.push(code);
-        }
-    }
-
-    // Highlight entire code block for better accuracy
-    const highlightMap = highlightCodeBlock(codeLines);
-
-    // Second pass: create table rows with highlighted code
-    const state = {
-        oldLine: 0, // Track line number in old version
-        newLine: 0, // Track line number in new version
-        codeIndex: 0, // Track index in codeLines array
-    };
-
-    const rows = lines
-        .map((line) => processDiffLine(line, state, highlightMap))
-        .join("");
-
-    return `<table class="${CSS_CLASSES.DIFF_TABLE}">${rows}</table>`;
 }
 
 // ============================================================================
@@ -445,4 +123,181 @@ export function groupByFile(comments) {
     });
 
     return groups;
+}
+
+// ============================================================================
+// Diff Formatting
+// ============================================================================
+
+/**
+ * Safely splits highlighted HTML into lines without breaking span tags
+ * @param {string} html - Highlighted HTML string
+ * @returns {Array<string>} - Array of HTML strings, one per line
+ */
+function splitHighlightedHtml(html) {
+    const lines = [];
+    let currentLine = "";
+    let tagStack = [];
+    let i = 0;
+
+    while (i < html.length) {
+        const char = html[i];
+
+        if (char === "\n") {
+            // Close any open tags before the newline
+            for (let j = tagStack.length - 1; j >= 0; j--) {
+                currentLine += "</span>";
+            }
+            lines.push(currentLine);
+            currentLine = "";
+            // Reopen tags for the next line
+            for (const tag of tagStack) {
+                currentLine += tag;
+            }
+            i++;
+        } else if (char === "<") {
+            // Check if this is a tag
+            const tagMatch = html.slice(i).match(/^<(\/?span[^>]*)>/);
+            if (tagMatch) {
+                const fullTag = tagMatch[0];
+                const tagContent = tagMatch[1];
+                currentLine += fullTag;
+
+                if (tagContent.startsWith("/")) {
+                    // Closing tag
+                    tagStack.pop();
+                } else {
+                    // Opening tag
+                    tagStack.push(fullTag);
+                }
+
+                i += fullTag.length;
+            } else {
+                currentLine += char;
+                i++;
+            }
+        } else {
+            currentLine += char;
+            i++;
+        }
+    }
+
+    // Add the last line if there's content
+    if (currentLine) {
+        lines.push(currentLine);
+    }
+
+    return lines;
+}
+
+/**
+ * Formats a Git diff patch into an HTML table with syntax highlighting
+ * @param {string} patch - Git diff patch string
+ * @returns {string} - HTML string containing the formatted diff table
+ */
+export function formatDiffForTable(patch) {
+    if (!patch) {
+        return '<p class="no-diff">No diff available</p>';
+    }
+
+    const lines = patch.split("\n");
+
+    // First pass: collect all code lines and their types
+    const codeLines = [];
+    const lineTypes = [];
+    let oldLine = 0;
+    let newLine = 0;
+    const lineNumbers = [];
+
+    for (const line of lines) {
+        // Parse hunk header
+        if (line.startsWith("@@")) {
+            const match = line.match(/@@ -(\d+),?\d* \+(\d+),?\d* @@/);
+            if (match) {
+                oldLine = parseInt(match[1], 10);
+                newLine = parseInt(match[2], 10);
+            }
+            continue;
+        }
+
+        // Skip file headers
+        if (line.startsWith("+++") || line.startsWith("---")) {
+            continue;
+        }
+
+        // Determine line type and extract code
+        let type, code;
+        if (line.startsWith("+")) {
+            type = "add";
+            code = line.slice(1);
+            lineNumbers.push({ old: "", new: newLine });
+            newLine++;
+        } else if (line.startsWith("-")) {
+            type = "remove";
+            code = line.slice(1);
+            lineNumbers.push({ old: oldLine, new: "" });
+            oldLine++;
+        } else {
+            type = "context";
+            code = line.startsWith(" ") ? line.slice(1) : line;
+            lineNumbers.push({ old: oldLine || "", new: newLine || "" });
+            if (oldLine) oldLine++;
+            if (newLine) newLine++;
+        }
+
+        codeLines.push(code);
+        lineTypes.push(type);
+    }
+
+    // Second pass: highlight the entire code block using auto-detection
+    let highlightedLines;
+    if (codeLines.length > 0) {
+        const fullCode = codeLines.join("\n");
+
+        try {
+            // Use highlight.js's built-in language detection
+            const highlighted = hljs.highlightAuto(fullCode).value;
+            highlightedLines = splitHighlightedHtml(highlighted);
+        } catch (error) {
+            console.warn(
+                "Syntax highlighting failed, using plain text:",
+                error,
+            );
+            highlightedLines = codeLines.map(escapeHtml);
+        }
+    } else {
+        highlightedLines = [];
+    }
+
+    // Third pass: build the HTML table
+    let html = '<table class="diff-table">';
+
+    for (let i = 0; i < highlightedLines.length; i++) {
+        const type = lineTypes[i];
+        const code = highlightedLines[i];
+        const nums = lineNumbers[i];
+
+        if (type === "add") {
+            html += `<tr class="diff-add-row">`;
+            html += `<td class="diff-line-num diff-line-num-old"></td>`;
+            html += `<td class="diff-line-num diff-line-num-new">${nums.new}</td>`;
+            html += `<td class="diff-line diff-add"><span class="add">+</span>${code}</td>`;
+            html += `</tr>`;
+        } else if (type === "remove") {
+            html += `<tr class="diff-remove-row">`;
+            html += `<td class="diff-line-num diff-line-num-old">${nums.old}</td>`;
+            html += `<td class="diff-line-num diff-line-num-new"></td>`;
+            html += `<td class="diff-line diff-remove"><span class="rem">-</span>${code}</td>`;
+            html += `</tr>`;
+        } else {
+            html += `<tr class="diff-context-row">`;
+            html += `<td class="diff-line-num diff-line-num-old">${nums.old}</td>`;
+            html += `<td class="diff-line-num diff-line-num-new">${nums.new}</td>`;
+            html += `<td class="diff-line diff-context"><span> </span>${code}</td>`;
+            html += `</tr>`;
+        }
+    }
+
+    html += "</table>";
+    return html;
 }
