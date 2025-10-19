@@ -77,7 +77,7 @@
             stopRefresh();
         } finally {
             loading = false;
-            if (silent) setTimeout(() => (refreshing = false), 2500);
+            if (silent) setTimeout(() => (refreshing = false), 2000);
         }
     }
 
@@ -173,12 +173,14 @@
     <label for="Load" class="pr-pane-label">Pull Request #{index}</label>
 
     <div class="input-group">
-        {#if url.trim()}
+        {#if url.trim() && !refreshing}
             <i
-                class="validation-icon bx {isUrlValid ? 'bx-check' : 'bx-x'}"
-                class:valid={isUrlValid}
-                class:invalid={!isUrlValid}
+                class="validation-icon bx {isUrlValid
+                    ? 'bx-check valid'
+                    : 'bx-x invalid'}"
             ></i>
+        {:else if url.trim()}
+            <i class="validation-icon bx bx-loader-dots bx-spin active"></i>
         {/if}
         <input
             type="url"
@@ -217,7 +219,7 @@
             <i class="bx bx-loader-dots bx-spin loading-icon"></i>
         </div>
     {:else if data}
-        <PRInfo pr={data.pr} {refreshing} />
+        <PRInfo pr={data.pr} />
 
         <div transition:fade class="pr-content">
             <Comments

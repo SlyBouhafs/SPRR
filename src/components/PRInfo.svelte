@@ -16,7 +16,7 @@
      * Pull request data
      * @type {PullRequest}
      */
-    let { pr, refreshing } = $props();
+    let { pr } = $props();
 
     // Safe derived values with defaults
     let totalComments = $derived(
@@ -42,10 +42,6 @@
             <h3>{pr?.title ?? "Untitled"}</h3>
         </div>
         <span class="count">{totalComments}</span>
-        <i
-            class={!refreshing ? "" : "bx bx-loader-dots bx-spin active"}
-            title="Auto-refreshing every 60 seconds"
-        ></i>
     </div>
     <div class="changes">
         <p>
