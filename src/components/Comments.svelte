@@ -36,9 +36,9 @@
                                     {filePath.length > 50
                                         ? "..." + filePath.slice(-47)
                                         : filePath}
-                                    <span class="count"
-                                        >{fileComments.length}</span
-                                    >
+                                    <span class="count">
+                                        {fileComments.length}
+                                    </span>
                                 </span>
                             </summary>
                             <div>

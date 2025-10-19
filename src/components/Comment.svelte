@@ -13,15 +13,21 @@
     let edited = $state(false);
     let copied = $state(false);
     let showDiff = $state(false);
-    let cssClass = $derived(
-        `comment ${type} ${currentBody.toLowerCase().includes(" bad") ? "negative" : "positive"}`,
+
+    let commentFlag = $derived(
+        currentBody.toLowerCase().includes(" bad") ||
+            currentBody.toLowerCase().includes(" missing")
+            ? "negative"
+            : "positive",
     );
+
+    let flagClass = $derived(`comment ${type} ${commentFlag}`);
 
     let metaText = $derived(
         showLine
             ? `Line: ${comment.line || comment.original_line}`
             : type === "general"
-              ? `${comment.user?.login || "Unknown"} • ${new Date(comment.created_at).toLocaleString()}`
+              ? `${comment.user?.login || "Unknown"}`
               : `${comment.user?.login || "Unknown"} • ${comment.state || ""}`,
     );
 
@@ -73,7 +79,7 @@
     }
 </script>
 
-<div class={cssClass}>
+<div class={flagClass}>
     <details open>
         <div class="shortcuts">
             <button
