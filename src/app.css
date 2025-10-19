@@ -342,6 +342,10 @@ body {
     color: var(--red);
 }
 
+.validation-icon.active {
+    color: var(--cyan);
+}
+
 input.has-icon {
     padding-left: 35px;
     padding-right: 55px;
@@ -1037,11 +1041,6 @@ a:hover,
     gap: 3px;
 }
 
-.inactive {
-    color: var(--current-line);
-    cursor: not-allowed;
-}
-
 .active {
     color: var(--cyan);
     cursor: not-allowed;
@@ -1144,8 +1143,10 @@ a:hover,
 
 /* Line content */
 .diff-line {
-    padding: 0 10px;
+    padding: 0px 10px;
     vertical-align: top;
+    white-space: pre-wrap;
+    word-break: break-word;
 }
 
 .diff-line span:first-child {

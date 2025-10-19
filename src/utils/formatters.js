@@ -86,8 +86,19 @@ function escapeHtml(text) {
  * @returns {string} - HTML string with syntax highlighting or escaped text if highlighting fails
  */
 function highlightLine(code) {
-    if (!code || !code.trim()) {
+    // if (!code || !code.trim()) {
+    //     return "";  // ❌ Removes whitespace-only lines!
+    // }
+    //
+
+    // Handle null/undefined
+    if (code === null || code === undefined) {
         return "";
+    }
+
+    // Preserve empty or whitespace-only lines (tabs, spaces, etc.)
+    if (code === "" || code.trim() === "") {
+        return escapeHtml(code);
     }
 
     try {
@@ -163,14 +174,7 @@ function isFileHeader(line) {
  * @returns {string} - HTML string for the row
  */
 function createAddedRow(code, lineNumber) {
-    return `
-        <tr class="${CSS_CLASSES.DIFF_ADD_ROW}">
-          <td class="${CSS_CLASSES.DIFF_LINE_NUM} ${CSS_CLASSES.DIFF_LINE_NUM_OLD}"></td>
-          <td class="${CSS_CLASSES.DIFF_LINE_NUM} ${CSS_CLASSES.DIFF_LINE_NUM_NEW}">${lineNumber}</td>
-          <td class="${CSS_CLASSES.DIFF_LINE} ${CSS_CLASSES.DIFF_ADD}">
-            <span>+</span>${highlightLine(code)}
-          </td>
-        </tr>`;
+    return `<tr class="${CSS_CLASSES.DIFF_ADD_ROW}"><td class="${CSS_CLASSES.DIFF_LINE_NUM} ${CSS_CLASSES.DIFF_LINE_NUM_OLD}"></td><td class="${CSS_CLASSES.DIFF_LINE_NUM} ${CSS_CLASSES.DIFF_LINE_NUM_NEW}">${lineNumber}</td><td class="${CSS_CLASSES.DIFF_LINE} ${CSS_CLASSES.DIFF_ADD}"><span>+</span>${highlightLine(code)}</td></tr>`;
 }
 
 /**
@@ -180,14 +184,7 @@ function createAddedRow(code, lineNumber) {
  * @returns {string} - HTML string for the row
  */
 function createRemovedRow(code, lineNumber) {
-    return `
-        <tr class="${CSS_CLASSES.DIFF_REMOVE_ROW}">
-          <td class="${CSS_CLASSES.DIFF_LINE_NUM} ${CSS_CLASSES.DIFF_LINE_NUM_OLD}">${lineNumber}</td>
-          <td class="${CSS_CLASSES.DIFF_LINE_NUM} ${CSS_CLASSES.DIFF_LINE_NUM_NEW}"></td>
-          <td class="${CSS_CLASSES.DIFF_LINE} ${CSS_CLASSES.DIFF_REMOVE}">
-            <span>-</span>${highlightLine(code)}
-          </td>
-        </tr>`;
+    return `<tr class="${CSS_CLASSES.DIFF_REMOVE_ROW}"><td class="${CSS_CLASSES.DIFF_LINE_NUM} ${CSS_CLASSES.DIFF_LINE_NUM_OLD}">${lineNumber}</td><td class="${CSS_CLASSES.DIFF_LINE_NUM} ${CSS_CLASSES.DIFF_LINE_NUM_NEW}"></td><td class="${CSS_CLASSES.DIFF_LINE} ${CSS_CLASSES.DIFF_REMOVE}"><span>-</span>${highlightLine(code)}</td></tr>`;
 }
 
 /**
@@ -198,14 +195,7 @@ function createRemovedRow(code, lineNumber) {
  * @returns {string} - HTML string for the row
  */
 function createContextRow(code, oldLine, newLine) {
-    return `
-        <tr class="${CSS_CLASSES.DIFF_CONTEXT_ROW}">
-          <td class="${CSS_CLASSES.DIFF_LINE_NUM} ${CSS_CLASSES.DIFF_LINE_NUM_OLD}">${oldLine || ""}</td>
-          <td class="${CSS_CLASSES.DIFF_LINE_NUM} ${CSS_CLASSES.DIFF_LINE_NUM_NEW}">${newLine || ""}</td>
-          <td class="${CSS_CLASSES.DIFF_LINE} ${CSS_CLASSES.DIFF_CONTEXT}">
-            <span> </span>${highlightLine(code)}
-          </td>
-        </tr>`;
+    return `<tr class="${CSS_CLASSES.DIFF_CONTEXT_ROW}"><td class="${CSS_CLASSES.DIFF_LINE_NUM} ${CSS_CLASSES.DIFF_LINE_NUM_OLD}">${oldLine || ""}</td><td class="${CSS_CLASSES.DIFF_LINE_NUM} ${CSS_CLASSES.DIFF_LINE_NUM_NEW}">${newLine || ""}</td><td class="${CSS_CLASSES.DIFF_LINE} ${CSS_CLASSES.DIFF_CONTEXT}"><span> </span>${highlightLine(code)}</td></tr>`;
 }
 
 /**
