@@ -6,7 +6,7 @@
     import Toast from "./components/Toast.svelte";
 
     let toastMessage = $state(null);
-    let toastType = $state("info");
+    let toastType = $state("");
 
     /**
      * Shows a toast notification

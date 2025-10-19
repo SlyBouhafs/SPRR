@@ -3,10 +3,7 @@
     import PRInfo from "./PRInfo.svelte";
     import Comments from "./Comments.svelte";
     import { fade } from "svelte/transition";
-    import {
-        totalCommentsCount,
-        urlPropagation,
-    } from "../state/state.svelte.js";
+    import { urlPropagation } from "../state/state.svelte.js";
     import {
         extractPRNumber,
         incrementPRNumber,

@@ -267,7 +267,6 @@ body {
     line-height: 1.5;
 }
 
-/* Main Content */
 /* ============================================================================
    Main Content & PR Panels
    ============================================================================ */
@@ -386,7 +385,6 @@ input:-webkit-autofill:focus {
     transform: none;
 }
 
-/* Error */
 /* ============================================================================
    Error & Loading States
    ============================================================================ */
@@ -542,7 +540,6 @@ input:-webkit-autofill:focus {
     font-weight: 600;
 }
 
-/* Comment Section */
 /* ============================================================================
    Comments Section
    ============================================================================ */
@@ -820,7 +817,6 @@ a:hover,
     transform: translateY(-1px);
 }
 
-/* Notification */
 /* ============================================================================
    Toast Notifications
    ============================================================================ */
@@ -878,8 +874,6 @@ a:hover,
     color: var(--orange);
     border-color: var(--orange);
 }
-
-/* Markdown Styling */
 /* ============================================================================
    Markdown Styles
    ============================================================================ */
@@ -1193,4 +1187,83 @@ a:hover,
 
 .diff-remove span:first-child {
     color: var(--red);
+}
+
+/* ============================================================================
+ Health indicator
+   ============================================================================ */
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.health-indicator {
+    position: relative;
+    width: 10px;
+    height: 10px;
+    cursor: help;
+}
+
+.health-dot {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    transition: background-color 0.3s ease;
+}
+
+.health-pulse {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    opacity: 0;
+}
+
+.health-indicator.healthy .health-dot {
+    background-color: var(--green);
+    box-shadow: 0 0 4px var(--green);
+}
+
+.health-indicator.healthy .health-pulse {
+    background-color: var(--green);
+    animation: pulse 2s infinite;
+}
+
+.health-indicator.unhealthy .health-dot {
+    background-color: var(--red);
+    box-shadow: 0 0 4px var(--red);
+}
+
+.health-indicator.checking .health-dot {
+    background-color: var(--orange);
+    box-shadow: 0 0 4px var(--orange);
+    animation: blink 1s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.5);
+        opacity: 0.5;
+    }
+    100% {
+        transform: scale(2);
+        opacity: 0;
+    }
+}
+
+@keyframes blink {
+    0%,
+    100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.3;
+    }
 }

@@ -64,7 +64,7 @@
             currentBody = newBody;
             editing = false;
             edited = true;
-            showToast("Updated!", "success");
+            showToast("Comment updated!", "success");
         } catch (err) {
             showToast(`Error: ${err.message}`, "error");
         } finally {

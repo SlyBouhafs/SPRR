@@ -44,7 +44,7 @@
         <span class="count">{totalComments}</span>
         <i
             class={!refreshing ? "" : "bx bx-loader-dots bx-spin active"}
-            title="Auto-refreshing every 30s"
+            title="Auto-refreshing every 60 seconds"
         ></i>
     </div>
     <div class="changes">
