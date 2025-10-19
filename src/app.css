@@ -738,7 +738,7 @@ a:hover,
 
 .comment-body {
     padding: 0px 14px 14px 14px;
-    font-size: 13px;
+    font-size: 12px;
     color: var(--white);
     line-height: 1.6;
     word-break: break-word;
@@ -881,13 +881,6 @@ a:hover,
 /* ============================================================================
    Markdown Styles
    ============================================================================ */
-
-.markdown-body {
-    color: var(--white);
-    font-size: 13px;
-    line-height: 1.6;
-}
-
 .markdown-body h1,
 .markdown-body h2,
 .markdown-body h3,
@@ -1002,7 +995,7 @@ a:hover,
 .markdown-body hr {
     border: none;
     border-top: 1px solid var(--current-line);
-    margin: 16px 0;
+    margin: 10px 0;
 }
 
 .markdown-body input[type="checkbox"] {
