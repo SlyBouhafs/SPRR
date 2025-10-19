@@ -874,6 +874,11 @@ a:hover,
     border-color: var(--cyan);
 }
 
+.notification-warning {
+    color: var(--orange);
+    border-color: var(--orange);
+}
+
 /* Markdown Styling */
 /* ============================================================================
    Markdown Styles

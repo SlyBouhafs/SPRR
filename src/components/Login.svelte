@@ -3,6 +3,12 @@
     import { fade } from "svelte/transition";
 
     /**
+     * Function to display toast notifications
+     * Passed down from App.svelte
+     */
+    let { showToast } = $props();
+
+    /**
      * GitHub Personal Access Token entered by user
      * @type {string}
      */
@@ -10,13 +16,32 @@
 
     /**
      * Handles form submission and logs user in with provided token
+     * Uses new auth.login() return value for feedback
      * @param {SubmitEvent} e - Form submit event
      * @returns {void}
      */
     function handleSubmit(e) {
         e.preventDefault();
-        if (token.trim()) {
-            auth.login(token.trim());
+
+        const trimmedToken = token.trim();
+
+        if (!trimmedToken) {
+            showToast("Please enter a token", "error");
+            return;
+        }
+
+        const success = auth.login(trimmedToken);
+
+        if (success) {
+            // Check if token format is valid after login
+            if (!auth.isValidFormat) {
+                showToast(
+                    "Token format doesn't match GitHub PAT pattern. It may not work correctly.",
+                    "warning",
+                );
+            }
+        } else {
+            showToast("Failed to save token. Please try again.", "error");
         }
     }
 </script>

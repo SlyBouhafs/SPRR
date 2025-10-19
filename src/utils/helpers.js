@@ -97,7 +97,7 @@ export async function copyToClipboard(text) {
 
 /**
  * Gets the appropriate icon class for a toast notification type
- * @param {"success" | "error" | "info"} type - Toast notification type
+ * @param {"success" | "error" | "info" | "warning"} type - Toast notification type
  * @returns {string} - Icon class name
  */
 export function getToastIconClass(type) {
@@ -108,8 +108,10 @@ export function getToastIconClass(type) {
             return "bx bxs-x-square";
         case "info":
             return "bx bxs-info-square";
+        case "warning":
+            return "bx bxs-alert-square";
         default:
-            return "bx bxs-info-square";
+            return "bx bxs-sparkle-square";
     }
 }
 

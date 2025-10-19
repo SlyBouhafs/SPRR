@@ -21,6 +21,12 @@ export async function fetchPR(url) {
     );
 
     if (!response.ok) {
+        // Handle authentication errors by clearing invalid token
+        if (response.status === 401) {
+            auth.clearInvalidToken();
+            throw new Error("Authentication failed. Please login again.");
+        }
+
         const error = await response.json();
         throw new Error(error.error);
     }
@@ -52,6 +58,12 @@ export async function updateComment(url, commentId, type, body) {
     );
 
     if (!response.ok) {
+        // Handle authentication errors by clearing invalid token
+        if (response.status === 401) {
+            auth.clearInvalidToken();
+            throw new Error("Authentication failed. Please login again.");
+        }
+
         const error = await response.json();
         throw new Error(error.error);
     }
