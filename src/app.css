@@ -1146,7 +1146,7 @@ a:hover,
     padding: 0px 10px;
     vertical-align: top;
     white-space: pre-wrap;
-    word-break: break-word;
+    word-break: break-all;
 }
 
 .diff-line span:first-child {
